@@ -1,0 +1,9 @@
+built
+node_modules
+.openode
+tsconfig.tsbuildinfo
+public/tts/*
+public/gltf/*
+public/mp3/*
+public/mp4/*
+public/pano/*

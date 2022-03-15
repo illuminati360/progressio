@@ -1,0 +1,59 @@
+{
+  "name": "altspace-mre-collection",
+  "version": "0.0.1",
+  "private": true,
+  "description": "",
+  "main": "built/server.js",
+  "author": "willneedit",
+  "license": "MIT",
+  "keywords": [
+    "mixed reality",
+    "virtual reality",
+    "vr",
+    "altspacevr",
+    "sample",
+    "node"
+  ],
+  "engines": {
+    "node": ">=8.12.0",
+    "npm": ">=6.4.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "tsc --build --clean",
+    "build": "tsc --build",
+    "lint": "tslint -p ./tsconfig.json src/**/*.ts",
+    "start": "node .",
+    "debug": "node --nolazy --inspect-brk=9229 .",
+    "postinstall": "npm run build"
+  },
+  "devDependencies": {
+    "tslint": "^6.1.3",
+    "tsutils": "^3.17.1"
+  },
+  "dependencies": {
+    "@microsoft/mixed-reality-extension-sdk": "^0.20.0",
+    "@types/big-integer": "0.0.31",
+    "@types/got": "^9.4.1",
+    "@types/http-proxy": "^1.16.2",
+    "@types/node": "^10.3.1",
+    "@types/pg": "^7.4.11",
+    "@types/pg-escape": "^0.2.0",
+    "@types/query-string": "^6.1.1",
+    "@types/restify": "^8.4.2",
+    "@types/sha1": "^1.1.1",
+    "@types/ws": "^6.0.1",
+    "big-integer": "^1.6.40",
+    "forwarded-for": "^1.0.1",
+    "got": "^9.6.0",
+    "http-proxy": "^1.18.1",
+    "http-proxy-rules": "^1.1.3",
+    "pg": "^8.3.3",
+    "pg-escape": "^0.2.0",
+    "query-string": "^6.2.0",
+    "restify": "^8.5.1",
+    "sha1": "^1.1.1",
+    "text2wav": "0.0.13",
+    "typescript": "^3.7.2"
+  }
+}

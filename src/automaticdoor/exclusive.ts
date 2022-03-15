@@ -1,0 +1,92 @@
+/*!
+ * Copyright (c) iwontsay/willneedit. All rights reserved.
+ * Licensed under the MIT License.
+ */
+
+/*!
+ * Copyright (c) iwontsay/willneedit. All rights reserved.
+ * Licensed under the MIT License.
+ */
+
+import Applet from "../Applet";
+import DoorGuard from "../DoorGuard";
+
+import { ContextLike } from "../frameworks/context/types";
+
+import { ParameterSet, User, Guid, Actor, Color3, Color4, AlphaMode, ColliderType, CollisionLayer } from "@microsoft/mixed-reality-extension-sdk";
+
+import Door from "../frameworks/door/door";
+
+export default class AutomaticDoor extends Applet {
+    private initialized = false;
+
+    private doors: Map<Guid, Door>;
+    private userTriggers: Map<Guid, Actor>;
+
+    public init(context: ContextLike, params: ParameterSet, baseUrl: string) {
+        super.init(context, params, baseUrl);
+
+        this.doors = new Map<Guid, Door>();
+        this.userTriggers = new Map<Guid, Actor>();
+
+        this.context.onUserJoined(this.userjoined);
+        this.context.onUserLeft(this.userLeft);
+        this.context.onStarted(this.started);
+        this.context.onStopped(this.stopped);
+    }
+
+    private userjoined = async (user: User) => {
+        console.debug(`Connection request by ${user.name} from ${user.properties.remoteAddress}`);
+        DoorGuard.greeted(user.properties.remoteAddress);
+        if (this.userTriggers.has(user.id)) {
+            this.userTriggers.get(user.id).destroy();
+            this.userTriggers.delete(user.id);
+        }
+        const transMat = this.context.assets.createMaterial('invis', {
+            color: Color4.FromColor3(Color3.Red(), 0.0), alphaMode: AlphaMode.Blend
+        });
+        this.userTriggers.set(user.id, Actor.Create(this.context.baseContext, {
+            actor: {
+                name: "trigger",
+                appearance: {
+                    meshId: this.context.assets.createBoxMesh('trigger', 0.6, 0.6, 0.6).id,
+                    materialId: transMat.id
+                },
+                transform: {
+                    local: { position: { x: 0, y: 0, z: 0 } }
+                },
+                rigidBody: {
+                    isKinematic: true,
+                    useGravity: false
+                },
+                collider: {
+                    geometry: { shape: ColliderType.Auto },
+                    layer: CollisionLayer.Hologram
+                },
+                attachment: {
+                    attachPoint: "spine-middle",
+                    userId: user.id
+                },
+                exclusiveToUser: user.id,
+            }
+        }));
+
+        const door = new Door();
+        door.started(this.context, this.parameter.def as string, user);
+        door.addUser(user, this.userTriggers.get(user.id));
+        this.doors.set(user.id, door);
+    }
+
+    private userLeft = async (user: User) => {
+        this.userTriggers.get(user.id).destroy();
+        this.doors.get(user.id).remove();
+        this.doors.delete(user.id);
+    }
+
+    private started = () => {
+    }
+
+    private stopped = () => {
+        this.doors.forEach(d => d.stopped());
+    }
+}
